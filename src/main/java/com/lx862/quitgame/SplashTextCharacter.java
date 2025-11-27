@@ -71,7 +71,7 @@ public class SplashTextCharacter {
         double endX = ((width + 0.5) * QuitGame.scale);
         double endY = ((8 + 2) * QuitGame.scale);
 
-        drawContext.drawBorder((int)startX, (int)startY, (int)endX, (int)endY, 0xFFFFFFFF);
+        drawContext.drawStrokedRectangle((int)startX, (int)startY, (int)endX, (int)endY, 0xFFFFFFFF);
     }
 
     public void dragged() {

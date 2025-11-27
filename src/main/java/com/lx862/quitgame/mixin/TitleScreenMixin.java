@@ -4,6 +4,7 @@ import com.lx862.quitgame.ReorderableSplashText;
 import com.lx862.quitgame.SplashTextCharacter;
 import com.lx862.quitgame.QuitGame;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -34,8 +35,6 @@ public class TitleScreenMixin extends Screen {
     @Unique
     private double mouseX;
     @Unique
-    private double mouseY;
-    @Unique
     public float startX = 0;
     @Unique
     public float startY = 0;
@@ -58,7 +57,7 @@ public class TitleScreenMixin extends Screen {
         for(SplashTextCharacter splashTextCharacter : new ArrayList<>(splash.chars)) {
             splashTextCharacter.setStartPos(startX, startY);
         }
-        positionCharacters(true);
+        quitgame$positionCharacters(true);
     }
 
     @Inject(method = "render", at = @At("HEAD"))
@@ -95,27 +94,52 @@ public class TitleScreenMixin extends Screen {
         QuitGame.scale = 1.8F * 100.0F / (float)(textRenderer.getWidth(splash.text) + 32);
 
         float scale = (float)QuitGame.scale - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * 6.2831855F) * (0.1F * ((float)QuitGame.scale / 1.8F)));
-        positionCharacters(false);
+        quitgame$positionCharacters(false);
 
         context.getMatrices().pushMatrix();
         context.getMatrices().translate(startX, startY);
         context.getMatrices().scale(scale, scale);
         for(SplashTextCharacter splashTextCharacter : new ArrayList<>(splash.chars)) {
             context.getMatrices().pushMatrix();
-            splashTextCharacter.render(context, delta / 3f, getAlpha(), textRenderer);
+            splashTextCharacter.render(context, delta / 3f, quitgame$getAlpha(), textRenderer);
             context.getMatrices().popMatrix();
         }
 
         context.getMatrices().popMatrix();
-//
+
 //        for(CharacterRenderer characterRenderer : new ArrayList<>(QuitGame.splash.chars)) {
 //            characterRenderer.renderBoundary(context, delta / 3f, textRenderer);
 //        }
     }
 
+    @Override
+    public boolean mouseClicked(Click click, boolean doubled) {
+        for(SplashTextCharacter splashTextCharacter : splash.chars) {
+            if(splashTextCharacter.hovered(click.x(), click.y())) {
+                splashTextCharacter.dragged();
+                return super.mouseClicked(click, doubled);
+            }
+        }
+        return super.mouseClicked(click, doubled);
+    }
+
+    @Override
+    public boolean mouseReleased(Click click) {
+        for(SplashTextCharacter splashTextCharacter : splash.chars) {
+            splashTextCharacter.released();
+        }
+        return super.mouseReleased(click);
+    }
+
+    @Override
+    public boolean mouseDragged(Click click, double mouseX, double mouseY) {
+        this.mouseX = click.x();
+        return super.mouseDragged(click, mouseX, mouseY);
+    }
+
     @Unique
-    public void positionCharacters(boolean absolute) {
-        QuitGame.scale = 1.8F * (100.0F / (float)(textRenderer.getWidth(splash.text) + 32));
+    public void quitgame$positionCharacters(boolean absolute) {
+        QuitGame.scale = 1.75F * (100.0F / (float)(textRenderer.getWidth(splash.text) + 32));
 
         double strLength = textRenderer.getWidth(splash.text) * QuitGame.scale;
         double xSoFar = 0 - ((strLength / 2) / QuitGame.scale);
@@ -131,7 +155,7 @@ public class TitleScreenMixin extends Screen {
 
         for(SplashTextCharacter splashTextCharacter : new ArrayList<>(splash.chars)) {
             if(splashTextCharacter.isDragging()) {
-                int idx = getMouseCharIndex();
+                int idx = quitgame$getMouseCharIndex();
                 if(idx != -1) {
                     splash.reorder(splashTextCharacter, idx);
                 }
@@ -140,7 +164,7 @@ public class TitleScreenMixin extends Screen {
     }
 
     @Unique
-    private int getMouseCharIndex() {
+    private int quitgame$getMouseCharIndex() {
         int i = 0;
         for(SplashTextCharacter splashTextCharacter : new ArrayList<>(splash.chars)) {
             if(splashTextCharacter.hoveredXAxis(mouseX)) {
@@ -151,34 +175,8 @@ public class TitleScreenMixin extends Screen {
         return -1;
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for(SplashTextCharacter splashTextCharacter : splash.chars) {
-            if(splashTextCharacter.hovered(mouseX, mouseY)) {
-                splashTextCharacter.dragged();
-                return super.mouseClicked(mouseX, mouseY, button);
-            }
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        for(SplashTextCharacter splashTextCharacter : splash.chars) {
-            splashTextCharacter.released();
-        }
-        return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        this.mouseX = mouseX;
-        this.mouseY = mouseY;
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-    }
-
     @Unique
-    private float getAlpha() {
+    private float quitgame$getAlpha() {
         float a = 1.0F;
         if (this.doBackgroundFade) {
             float g = (float)(Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 2000.0F;

@@ -5,11 +5,11 @@
   "name": "Quit Game",
   "description": "Give you choice to re-evaluate whether to play Minecraft or not",
   "authors": [
-    "LX86"
+    "AmberFrost"
   ],
   "contact": {
-    "homepage": "https://github.com/Kenny-Hui/QuitGame",
-    "sources": "https://github.com/Kenny-Hui/QuitGame"
+    "homepage": "https://github.com/AmberIsFrozen/QuitGame",
+    "sources": "https://github.com/AmberIsFrozen/QuitGame"
   },
 
   "license": "CC0",
@@ -25,6 +25,6 @@
     "quitgame.mixin.json"
   ],
   "depends": {
-    "minecraft": ">=1.21.6"
+    "minecraft": ">=1.21.9"
   }
 }

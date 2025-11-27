@@ -53,7 +53,7 @@ public class Config {
         jsonObject.add("keywords", keywords);
 
         try (Writer writer = new FileWriter(configFile.toFile())) {
-            Gson gson = new GsonBuilder().create();
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(jsonObject, writer);
         } catch (Exception e) {
             QuitGame.LOGGER.error("", e);
