@@ -7,8 +7,8 @@
   ],
   "client": [
     "RealmsNotificationsScreenMixin",
-    "SplashTextRendererAccessorMixin",
-    "SplashTextRendererMixin",
+    "SplashRendererAccessorMixin",
+    "SplashRendererMixin",
     "TitleScreenMixin"
   ],
   "injectors": {

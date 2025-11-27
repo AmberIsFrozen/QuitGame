@@ -1,11 +1,9 @@
 package com.lx862.quitgame;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.RotationAxis;
-import org.joml.Vector2d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.ARGB;
 import org.joml.Vector2f;
 
 public class SplashTextCharacter {
@@ -20,7 +18,7 @@ public class SplashTextCharacter {
         this.character = character;
         this.targetPos = new Vector2f(0, 0);
         this.renderedPos = new Vector2f(0, 0);
-        this.width = MinecraftClient.getInstance().textRenderer.getWidth(String.valueOf(character));
+        this.width = Minecraft.getInstance().font.width(String.valueOf(character));
     }
 
     public char getChar() {
@@ -55,23 +53,23 @@ public class SplashTextCharacter {
         return mouseY >= startY && mouseY <= endY;
     }
 
-    public void render(DrawContext drawContext, double deltaTime, float alpha, TextRenderer textRenderer) {
+    public void render(GuiGraphics guiGraphics, double deltaTime, float alpha, Font font) {
         renderedPos = renderedPos.lerp(targetPos, (float)deltaTime);
 
-        drawContext.getMatrices().pushMatrix();
-        drawContext.getMatrices().translate(renderedPos.x, renderedPos.y);
-        drawContext.getMatrices().rotate((float)(-QuitGame.rotAngle * Math.PI) / 180f);
-        drawContext.drawTextWithShadow(textRenderer, String.valueOf(character), 0, 0, ColorHelper.withAlpha(alpha, 16776960));
-        drawContext.getMatrices().popMatrix();
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(renderedPos.x, renderedPos.y);
+        guiGraphics.pose().rotate((float)(-QuitGame.rotAngle * Math.PI) / 180f);
+        guiGraphics.drawString(font, String.valueOf(character), 0, 0, ARGB.color(alpha, 16776960));
+        guiGraphics.pose().popMatrix();
     }
 
-    public void renderBoundary(DrawContext drawContext, double deltaTime, TextRenderer textRenderer) {
+    public void renderBoundary(GuiGraphics guiGraphics, double deltaTime, Font font) {
         double startX = (startPos.x) + (targetPos.x * QuitGame.scale);
         double startY = (startPos.y) + ((targetPos.y - 1) * QuitGame.scale);
         double endX = ((width + 0.5) * QuitGame.scale);
         double endY = ((8 + 2) * QuitGame.scale);
 
-        drawContext.drawStrokedRectangle((int)startX, (int)startY, (int)endX, (int)endY, 0xFFFFFFFF);
+        guiGraphics.submitOutline((int)startX, (int)startY, (int)endX, (int)endY, 0xFFFFFFFF);
     }
 
     public void dragged() {

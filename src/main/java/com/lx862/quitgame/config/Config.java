@@ -4,7 +4,6 @@ import com.google.gson.*;
 import com.lx862.quitgame.QuitGame;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Writer;
